@@ -12,8 +12,8 @@ numpy.random.seed()
 
 #nome do arquivo contendo a entrada
 nome_entrada="entrada.txt"
-initPop=500
-NGEN=5000
+initPop=100
+NGEN=50
 CXPB=0.8
 MUTPB=0.1
 
