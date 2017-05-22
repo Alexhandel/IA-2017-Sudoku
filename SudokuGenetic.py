@@ -17,7 +17,7 @@ nome_entrada="entrada.txt"
 initPop=100
 NGEN=50
 CXPB=0.8
-MUTPB=0.1
+MUTPB=0.01
 
 #função auxiliar para conversão de string
 def RepresentsInt(s):
@@ -57,6 +57,7 @@ def evaluate(Individual):
 	#primeira parte da função: colocar os numeros no tabuleiro de acordo com a string do individuo
 	finalResult=0
 	tempResult=0
+	tempArray=[]
 	newBoard=thisboard.copy()
 	genes=numpy.zeros((0,0))
 	for x in Individual:
@@ -66,35 +67,35 @@ def evaluate(Individual):
 		newBoard[indexesToSub[0][i]][indexesToSub[1][i]] = genes[i]
 	#segunda parte da função: faz o calculo
 	#calculo por linha
-	rowResult=0
+	rowConflicts=0
 	for i in range(0,size):
+		tempArray=[]
 		for j in range(0,size):
-			tempResult=tempResult+newBoard[i][j]
-		rowResult = rowResult+ abs((tempResult-expSum))
+			tempArray=numpy.append(tempArray,newBoard[i][j])
+		uniques=len(numpy.unique(tempArray))
+		rowConflicts = rowConflicts+ (size-uniques)
 		tempResult=0
 	#calculo por coluna
-	colResult=0
+	colConflicts=0
 	for j in range(0,size):
+		tempArray=[]
 		for i in range(0,size):
-			tempResult=tempResult+newBoard[i][j]
-		colResult = colResult+ abs((tempResult-expSum))
+			tempArray=numpy.append(tempArray,newBoard[i][j])
+		uniques=len(numpy.unique(tempArray))
+		colConflicts = colConflicts+ (size-uniques)
 		tempResult=0
 	#calculo por bloco
 	blockSize=math.sqrt(size)
 	blocks=numpy.zeros((0,0))
-	blockResult=0
+	blockConflicts=0
 	hBlocks = numpy.hsplit(newBoard,blockSize)
 	for x in hBlocks:
 		temp=numpy.vsplit(x,blockSize)
 		for f in temp:
-			blocks = numpy.append(blocks,f)
-	for x in range(0,size):
-		for y in range (0,size):
-			tempResult=tempResult+blocks[y+(x*size)]
-		blockResult = blockResult+ abs(tempResult-expSum)
-		tempResult=0
+			uniques=len(numpy.unique(f))
+			blockConflicts=blockConflicts+(size-uniques)
 	#avaliação final
-	finalResult=float(rowResult+colResult+blockResult)+0.1
+	finalResult=float(rowConflicts+colConflicts+blockConflicts)+0.1
 	return(finalResult),
 
 #gerador de numero aleartorio
