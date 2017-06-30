@@ -16,10 +16,10 @@ nome_entrada="entrada.txt"
 #Parametros do Genetico. Mudar aqui
 initPop=100
 NGEN=50
-CXPB=0.8
+CXPB=0.9
 MUTPB=0.01
 
-#função auxiliar para conversão de string
+#funcao auxiliar para conversao de string
 def RepresentsInt(s):
     try: 
         int(s)
@@ -27,13 +27,13 @@ def RepresentsInt(s):
     except ValueError:
         return False
 
-#função que acha a soma esperada em cada linha, coluna e bloco
+#funcao que acha a soma esperada em cada linha, coluna e bloco
 def findExpectedSum(size):
 	expSum = sum(range(1,size+1))
 	return expSum
 
 
-#função que retorna um vetor tabuleiro a partir da entrada em texto
+#funcao que retorna um vetor tabuleiro a partir da entrada em texto
 def makeBoard(boardEntry,size):
 	board = numpy.zeros((size,size))
 	i=0
@@ -50,11 +50,11 @@ def makeBoard(boardEntry,size):
 		j=0
 		i=i+1
 	return board
-#fim da função
+#fim da funcao
 
-#Função de fitness do genetico
+#Funcao de fitness do genetico
 def evaluate(Individual):
-	#primeira parte da função: colocar os numeros no tabuleiro de acordo com a string do individuo
+	#primeira parte da funcao: colocar os numeros no tabuleiro de acordo com a string do individuo
 	finalResult=0
 	tempResult=0
 	tempArray=[]
@@ -65,7 +65,7 @@ def evaluate(Individual):
 	indexesToSub = numpy.where(thisboard==-1)
 	for i in range(0,len(genes)):
 		newBoard[indexesToSub[0][i]][indexesToSub[1][i]] = genes[i]
-	#segunda parte da função: faz o calculo
+	#segunda parte da funcao: faz o calculo
 	#calculo por linha
 	rowConflicts=0
 	for i in range(0,size):
@@ -94,7 +94,7 @@ def evaluate(Individual):
 		for f in temp:
 			uniques=len(numpy.unique(f))
 			blockConflicts=blockConflicts+(size-uniques)
-	#avaliação final
+	#avaliacao final
 	finalResult=float(rowConflicts+colConflicts+blockConflicts)+0.1
 	return(finalResult),
 
@@ -116,7 +116,7 @@ size=int(in_file.readline())		#le a primeira linha, contem o tamanho do tabuleir
 boardLine=in_file.readline()
 thisboard = makeBoard(boardLine,size)
 print("BOARD: \n",thisboard)
-unique, counts = numpy.unique(thisboard, return_counts=True) #conta quantos espaços vazios existem
+unique, counts = numpy.unique(thisboard, return_counts=True) #conta quantos espacos vazios existem
 emptyCount = counts[0]
 in_file.close()
 expSum=findExpectedSum(size)
@@ -142,7 +142,7 @@ mstats.register("min", numpy.min)
 mstats.register("max", numpy.max)
 HoF= tools.HallOfFame(1)
 
-pop= toolbox.population(n=initPop)		#inicializa a população inicial
+pop= toolbox.population(n=initPop)		#inicializa a populacao inicial
 
 print(len(pop))
 fitnesses = list(map(toolbox.evaluate, pop))
@@ -177,11 +177,10 @@ for g in range(NGEN):
 		genMin=min(fits)
 		genMax=max(fits)
 		print("GENERATION: ",g+1,"   MIN: ",genMin,"   MAX: ",genMax,"   MEAN: ",mean,"   STDEV: ",std)
-
-#endPop, log = algorithms.eaSimple(pop,toolbox,CXPB,MUTPB,NGEN, stats=mstats,halloffame=HoF,verbose=True) #essa é a linha que de fato faz e roda o genetico
-#for ind in endPop:		#loop que avalia o fitness da população final
-#	ind.fitness.values = evaluate(ind)
-#print("BEST INDIV:",HoF,"FITNESS:",evaluate(HoF)) #printa o individuo com melhor fitness entre todas as gerações
-#print(len(endPop), initPop)
+		if genMin==0.1:
+			print("EUREKA")
+			print(tools.selBest(pop,1))
 
 
+bestIndividual=tools.selBest(pop,1)
+print("BEST: ",bestIndividual, "FITNESS: ", bestIndividual[0].fitness.values)
